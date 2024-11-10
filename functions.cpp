@@ -89,10 +89,29 @@ void Maze::carveMaze(int x, int y) {
 				}
 				else cout << " ";
 		}
-			cout << "|" << endl;
+			//print right walls
+			for (int j =0; j < width; j++){
+			if (j == width - 1) {
+				if (grid[i][j].walls[EAST]) {
+					if (grid[i][j].walls[EAST]) {
+						cout << "|";
+					}
+				}
+
+				}
+			}
+			cout << endl;
+
+			//print bottom walls
+			for (int j = 0; j < width; j++) {
+				if (grid[i][j].walls[SOUTH]) {
+					cout << "+-";  
+				}
+				else {
+					cout << "+ ";
+				}
+			}
+			cout << "-" << endl;
 	}
-		for (int j = 0; j < width; j++) {
-			//prints bottom walls
-			cout << "+-";
+
 		}
-}
