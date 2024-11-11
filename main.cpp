@@ -11,7 +11,7 @@ int main() {
 	//create a maze of specified size
 	int width;
 	int height;
-	cout << "Please specify dimensions of your maze: ";
+	cout << "Please specify dimensions of your maze: \n";
 	cout << "Width: ";
 	cin >> width;
 	cout << "Height: ";

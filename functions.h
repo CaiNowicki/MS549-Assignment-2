@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -20,13 +21,15 @@ class Maze {
 public:
 	int width;
 	int height;
-	vector<vector<Cell>> grid; // creates 2d vector grid (is doubled because it is creating a vector of vectors)
+	//pointer here
+	vector<vector<unique_ptr<Cell>>> grid; // creates 2d vector grid (is doubled because it is creating a vector of vectors
+	
 
 	//Maze constructor
 	Maze(int w, int h);
 
 	//Maze initializer
-	void intializeMaze();
+	void initializeMaze();
 
 	//Maze carver using depth-first search to recursively design the maze
 	void carveMaze(int x, int y);

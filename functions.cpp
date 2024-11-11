@@ -9,109 +9,69 @@ using namespace std;
 //Constructor
 //creates dimensions and grid
 Maze::Maze(int w, int h) : width(w), height(h) {
-	grid.resize(h, vector<Cell>(w));
-	intializeMaze();
+	grid.resize(height);
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			grid[i].push_back(std::make_unique<Cell>());
+		}
+	}
+	initializeMaze();
 }
-//Initalizer
-//creates cells and walls
-void Maze::intializeMaze() {
+
+// Initialize each cell in the maze
+void Maze::initializeMaze() {
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			grid[i][j].visited = false; //all cells start in "not visited" state
+			grid[i][j]->visited = false;
 			for (int k = 0; k < 4; k++) {
-				grid[i][j].walls[k] = true; //all walls start as up around all cells
+				grid[i][j]->walls[k] = true;
 			}
 		}
 	}
 }
 
+
 //Maze Carver
 //Recursively "carves" out the maze paths through the walls using depth-first search
 void Maze::carveMaze(int x, int y) {
-	grid[y][x].visited = true; //marks the cell as visited
-
-	//Move within the maze
+	grid[y][x]->visited = true;
 	Direction directions[] = { NORTH, SOUTH, EAST, WEST };
-	random_shuffle(directions, directions + 4); //randomize the direction
+	std::random_shuffle(directions, directions + 4);  // Shuffle directions
 
-	for (int i = 0; i < 4; i++) {
-		int nx = x, ny = y; //new x, new y
-		//Move in the specified direction
-		switch (directions[i]) {
-		case NORTH: ny -= 1;
+	for (Direction& dir : directions) {  // Passing as a reference here
+		int nx = x, ny = y;
+		switch (dir) {
+		case NORTH: ny -= 1; 
 			break;
-		case SOUTH: ny += 1;
+		case SOUTH: ny += 1; 
 			break;
-		case EAST: nx += 1;
+		case EAST:  nx += 1; 
 			break;
-		case WEST: nx -= 1;
+		case WEST:  nx -= 1; 
 			break;
 		}
-		//Check if next move is within the grid and the cell has not been visited
-		if (nx >= 0 && nx < width && ny >= 0 && ny < height && !grid[ny][nx].visited) {
-			//Remove the wall between x,y and nx,ny
-			grid[y][x].walls[directions[i]] = false;
-
-			//Now remove opposite wall of new cell to create a path
-			if (directions[i] == NORTH) {
-				grid[ny][nx].walls[SOUTH] = false;
-			}
-			else if (directions[i] == SOUTH) {
-				grid[ny][nx].walls[NORTH] = false;
-			}
-			else if (directions[i] == EAST) {
-				grid[ny][nx].walls[WEST] = false;
-			}
-			else if (directions[i] == WEST) {
-				grid[ny][nx].walls[EAST] = false;
-			}
-			carveMaze(nx, ny);
+		if (nx >= 0 && nx < width && ny >= 0 && ny < height && !grid[ny][nx]->visited) {
+			grid[y][x]->walls[dir] = false;
+			grid[ny][nx]->walls[(dir + 2) % 4] = false;  // Open opposite wall
+			carveMaze(nx, ny);  // Recursive call
 		}
 	}
 }
 
 	//Maze printer
-	void Maze::printMaze() {
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				//prints top walls
-				if (grid[i][j].walls[NORTH]) {
-					cout << "+-";
-				}
-				else cout << "+ ";
-			}
-			cout << "+" << endl;
-
-			for (int j = 0; j < width; j++) {
-				//prints left walls
-				if (grid[i][j].walls[WEST]) {
-					cout << "| ";
-				}
-				else cout << " ";
+void Maze::printMaze() {
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			cout << (grid[i][j]->walls[NORTH] ? "+-" : "+ ");
 		}
-			//print right walls
-			for (int j =0; j < width; j++){
-			if (j == width - 1) {
-				if (grid[i][j].walls[EAST]) {
-					if (grid[i][j].walls[EAST]) {
-						cout << "|";
-					}
-				}
-
-				}
-			}
-			cout << endl;
-
-			//print bottom walls
-			for (int j = 0; j < width; j++) {
-				if (grid[i][j].walls[SOUTH]) {
-					cout << "+-";  
-				}
-				else {
-					cout << "+ ";
-				}
-			}
-			cout << "-" << endl;
+		cout << "+" << endl;
+		for (int j = 0; j < width; j++) {
+			cout << (grid[i][j]->walls[WEST] ? "| " : "  ");
+		}
+		cout << "|" << endl;
 	}
-
-		}
+	for (int j = 0; j < width; j++) {
+		cout << "+-";
+	}
+	cout << "+" << endl;
+}
